@@ -11,7 +11,8 @@ from galpy.orbit import Orbit
 import numpy as np
 import astropy
 import matplotlib.pyplot as plt
-from matplotlib import rc, animation
+from matplotlib import rc
+from matplotlib import animation
 plt.rcParams['mathtext.fontset'] = 'stix'
 plt.rcParams['font.family'] = 'STIXGeneral'
 
