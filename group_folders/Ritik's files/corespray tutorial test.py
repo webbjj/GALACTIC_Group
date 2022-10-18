@@ -9,11 +9,12 @@ from galpy.orbit import Orbit
 
 # Import other necessary Python packages:
 import numpy as np
+import astropy
 import matplotlib.pyplot as plt
-from matplotlib import rc
+from matplotlib import rc, animation
 plt.rcParams['mathtext.fontset'] = 'stix'
 plt.rcParams['font.family'] = 'STIXGeneral'
-from matplotlib import animation
+
 
 # load in parameters for M3
 gcname ='M3' # GC name
