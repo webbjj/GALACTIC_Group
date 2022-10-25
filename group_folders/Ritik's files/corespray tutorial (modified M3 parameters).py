@@ -19,31 +19,35 @@ plt.rcParams['font.family'] = 'STIXGeneral'
 
 # load in parameters for M3
 gcname = 'M3'  # GC name
-mu0 = 0.  # Average 1D velocity in the core [km/s]
-sig0 = 7.6  # Central 1D velocity dispersion [km/s]
-vesc0 = 30.0  # Central escape velocity [km/s]
-logrho0 = 3.67  # Log of central density [Msol / pc^3]
-rho0 = 10.0**3.67  # Core density [Msol / pc^3]
-mgc = 4.06e5  # Mass [solar masses]
-rgc = 127.28  # Tidal radius of GC, assuming King potential [pc]
-rcore = 1.23  # Core radius of GC [pc]
+mu0 = 1.  # Average 1D velocity in the core [km/s] (changed 0. -> 1.)
+sig0 = 70.6  # Central 1D velocity dispersion [km/s] (changed 7.6 -> 70.6)
+vesc0 = 60.0  # Central escape velocity [km/s] (changed 30.0 -> 60.0)
+logrho0 = 9.67  # Log of central density [Msol / pc^3] (changed 3.67 -> 9.67)
+rho0 = 20.0**9.67  # Core density [Msol / pc^3]
+# (changed 10.0 -> 20.0, 3.67 -> 9.67)
+mgc = 5.06e5  # Mass [solar masses] (changed 4.06e5 -> 5.06e5)
+rgc = 147.28  # Tidal radius of GC, assuming King potential [pc]
+# (changed 127.28 -> 147.28)
+rcore = 1.23  # Core radius of GC [pc] (changed 1.23 -> 10.23)
 W0 = 8.61469762517307
 
-mmin = 0.1  # Minimum stellar mass in core [Msol]
-mmax = 1.4  # Maximum stellar mass in the core [Msol]
-alpha = -1.35  # Stellar mass function in the core slope (Salpeter 1955)
+mmin = 1  # Minimum stellar mass in core [Msol] (changed 0.1 -> 1)
+mmax = 2.4  # Maximum stellar mass in the core [Msol] (changed 1.4 -> 2.4)
+alpha = -2.35  # Stellar mass function in the core slope (Salpeter 1955)
+# (changed -1.35 -> -2.35)
 
 potential = MWPotential2014  # Galactic potential model
-ro = 8.  # radius of the solar circle (needed for galpy)
-vo = 220.  # circular orbit velocity at the solar circle (needed for galpy)
+ro = 10.  # radius of the solar circle (needed for galpy) (changed 8. -> 10.)
+vo = 240.  # circular orbit velocity at the solar circle (needed for galpy)
+# (changed 220. -> 240.)
 
 # initialize cluster orbit in galpy
 os_init = Orbit.from_name(gcname, ro=ro, vo=vo, solarmotion=[-11.1, 24.0, 7.25])
 
 # integrating cluster orbit
-ts = np.linspace(0,10,1000)  # integration times
+ts = np.linspace(0, 10, 1000)  # integration times
 os_init.integrate(ts, potential)  \
-    # can choose which Galactic potential to use (e.g. MWPotenial2014)
+    # can choose which Galactic potential to use (e.g. MWPotential2014)
 
 # find maximum orbital period for cluster
 p_orb_rad = os_init.Tr()
@@ -142,7 +146,7 @@ ax[1, 1].set_xlabel(r"$v_{esc}$ (km/s)", fontsize=18)
 ax[1, 1].set_ylabel("Normalized Counts", fontsize=18)
 
 fig.tight_layout()
-plt.savefig("Ritik's M3 plot.png")
+plt.savefig("Ritik's M3 plot (modified parameters).png")
 plt.show()
 
 
