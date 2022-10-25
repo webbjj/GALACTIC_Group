@@ -132,6 +132,7 @@ ax[1, 1].set_xlabel(r"$v_{esc}$ (km/s)", fontsize=18)
 ax[1, 1].set_ylabel("Normalized Counts", fontsize=18)
 
 fig.tight_layout()
+plt.savefig("Ritik's M3 plots.png")
 plt.show()
 
 
