@@ -19,9 +19,9 @@ plt.rcParams['font.family'] = 'STIXGeneral'
 
 # load in parameters for M3
 gcname = 'M3'  # GC name
-mu0 = 0.  # Average 1D velocity in the core [km/s]
-sig0 = 7.6  # Central 1D velocity dispersion [km/s]
-vesc0 = 30.0  # Central escape velocity [km/s]
+mu0 = 1.  # Average 1D velocity in the core [km/s] (changed 0. -> 1.)
+sig0 = 7.6  # Central 1D velocity dispersion [km/s] (changed 7.6 -> 8.6)
+vesc0 = 30.0  # Central escape velocity [km/s] (changed 30.0 -> 31.0)
 logrho0 = 3.67  # Log of central density [Msol / pc^3]
 rho0 = 10.0**3.67  # Core density [Msol / pc^3]
 mgc = 4.06e5  # Mass [solar masses]
@@ -41,9 +41,9 @@ vo = 220.  # circular orbit velocity at the solar circle (needed for galpy)
 os_init = Orbit.from_name(gcname, ro=ro, vo=vo, solarmotion=[-11.1, 24.0, 7.25])
 
 # integrating cluster orbit
-ts = np.linspace(0,10,1000)  # integration times
+ts = np.linspace(0, 10, 1000)  # integration times
 os_init.integrate(ts, potential)  \
-    # can choose which Galactic potential to use (e.g. MWPotenial2014)
+    # can choose which Galactic potential to use (e.g. MWPotential2014)
 
 # find maximum orbital period for cluster
 p_orb_rad = os_init.Tr()
@@ -56,10 +56,10 @@ cspray = corespraydf(gcname, potential, mu0, sig0, vesc0, rho0, mgc, rgc, W0,
                      mmin, mmax, alpha)
 # Sample for one orbital period
 p_orb = p_orb_max * 1000  # Myr
-os, ob = cspray.sample(p_orb, nstar=10, binaries=True)
+os, ob = cspray.sample(p_orb, nstar=100, binaries=True)
 
 # extract parameters for single escapers
-ra = os.ra()  # [deg]
+ra = os.ra()  # [deg] (os is a galpy orbit instance)
 dec = os.dec()  # [deg]
 dist = os.dist()  # [kpc]
 pmra = os.pmra()  # [mas/yr]
@@ -72,7 +72,7 @@ v_esc = cspray.vesc  # [km/s]
 mstar = cspray.mstar  # [Msol]
 
 # extract parameters for all binary stars
-ra_b = ob.ra()  # [deg]
+ra_b = ob.ra()  # [deg] (ob is a galpy orbit instance)
 dec_b = ob.dec()  # [deg]
 dist_b = ob.dist()  # [kpc]
 pmra_b = ob.pmra()  # [mas/yr]
@@ -142,7 +142,7 @@ ax[1, 1].set_xlabel(r"$v_{esc}$ (km/s)", fontsize=18)
 ax[1, 1].set_ylabel("Normalized Counts", fontsize=18)
 
 fig.tight_layout()
-plt.savefig("Ritik's M3 plot.png")
+plt.savefig("Ritik's M3 plot (modified mu0).png")
 plt.show()
 
 
