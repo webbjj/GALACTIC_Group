@@ -17,6 +17,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import animation
 
+""" The following file contains comments made by Ritik as notes taken that 
+    analyze the corespray code.
+"""
+
 
 class corespraydf(object):
     """ A class for initializing a distribution function for stars that are
@@ -25,7 +29,6 @@ class corespraydf(object):
 	boundary and twice the contact boundary between two solar mass stars
 	Parameters
 	----------
-
 	gcorbit : string or galpy orbit instance
 		Name of Galactic Globular Cluster from which to simulate core ejection
 		or a Galpy orbit instance
@@ -44,18 +47,23 @@ class corespraydf(object):
 		galpy length scaling parameter (default: 8.)
 	vo : float
 		galpy velocity scaling parameter (default: 220.)
+	verbose : bool
+			print additional information to screen (default: False)
 
 	History
 	-------
-	2021 - Written - Grandin (UofT)
+	2021 - Written - Grondin (UofT)
 
 	"""
 
+    # initializing corespray parameters
     def __init__(self, gcorbit, pot=MWPotential2014, mgc=None, rgc=None,
                  W0=None, ro=8., vo=220., verbose=False):
 
+        # determines whether given GC is named or not
         if isinstance(gcorbit, str):
             self.gcname = gcorbit
+        # not quite sure what the parameter 'o' is in this case
             self.o = Orbit.from_name(self.gcname, ro=ro, vo=vo,
                                      solarmotion=[-11.1, 24.0, 7.25])
         else:
@@ -63,16 +71,23 @@ class corespraydf(object):
             self.o = gcorbit
 
         self.ro, self.vo = ro, vo
+        # initial age and mass of GC
         self.to = conversion.time_in_Gyr(ro=self.ro, vo=self.vo) * 1000.
         self.mo = conversion.mass_in_msol(ro=self.ro, vo=self.vo)
 
         self.mwpot = pot
 
+        # if the GC has no mass then it cannot have a potential either
         if mgc is None:
             self.gcpot = None
         else:
             if W0 is None:
+                # why is ra the result of dividing the half mass radius of the
+                # GC by 1.3?
                 ra = rgc / 1.3
+                # As mentioned earlier, W0 is PlummerPotential if W0 = None
+                # PlummerPotential and KingPotential are both functions from the
+                # galpy package
                 self.gcpot = PlummerPotential(mgc / self.mo, ra / self.ro,
                                               ro=self.ro, vo=self.vo)
             else:
@@ -80,6 +95,8 @@ class corespraydf(object):
                                            ro=self.ro, vo=self.vo)
 
         self.binaries = False
+
+# -----------------------------------------------------------------------------
 
     def sample_three_body(self, tdisrupt=1000., rate=1., nstar=None, mu0=0.,
                           sig0=10.0, vesc0=10.0, rho0=1., mmin=0.1, mmax=1.4,
@@ -90,7 +107,6 @@ class corespraydf(object):
 
 		Parameters
 		----------
-
 		tdisrupt : float
 			time over which sampling begins (Myr)
 		rate : float
@@ -101,17 +117,21 @@ class corespraydf(object):
 		mu0 : float
 			average 1D velocity in the core (default: 0 km/s)
 		sig0 : float
-			avarege 1D velocity disperions in the core (default 10.0 km/s)
+			average 1D velocity dispersions in the core (default 10.0 km/s)
 		vesc0 : float
 			escape velocity from the core (default: 10.0 km/s)
 		rho0 : float
 			core density (default: 1 Msun/pc^3)
+
+---------- the below parameters are not used in this function --------------
+
 		mgc : float
 			globular cluster mass - needed if cluster's potential is to be
 			included in orbit integration of escapers (default: None)
 		rgc : float
 			half-mass radius of globular cluster (assuming Plummer potential)
-			or tidal radius of globular cluster (assuming King potential) (default: None)
+			or tidal radius of globular cluster (assuming King potential)
+			(default: None)
 		W0 : float
 			King central potential parameter (default: None, which results in
 			cluster potential taken to be a Plummer)
@@ -149,7 +169,7 @@ class corespraydf(object):
 
 		History
 		-------
-		2021 - Written - Grandin/Webb (UofT)
+		2021 - Written - Grondin/Webb (UofT)
 
 		"""
 
@@ -175,15 +195,18 @@ class corespraydf(object):
         if self.gcpot is None:
             self.pot = self.mwpot
         else:
+            # galpy function that returns None
             moving_pot = MovingObjectPotential(self.o, self.gcpot, ro=self.ro,
                                                vo=self.vo)
             self.pot = [self.mwpot, moving_pot]
+
+# -----------------------------------------------------------------------------
 
         self.mu0, self.sig0, self.vesc0, self.rho0 = mu0, sig0, vesc0, rho0
 
         self.mmin, self.mmax, self.alpha = mmin, mmax, alpha
 
-        # Mean separation of star's in the core equal to twice the radius of a
+        # Mean separation of stars in the core equal to twice the radius of a
         # sphere that contains one star
         # Assume all stars in the core have mass equal to the mean mass
         masses = self._power_law_distribution_function(1000, self.alpha,
@@ -192,12 +215,11 @@ class corespraydf(object):
         self.rsep = ((self.mbar / self.rho0) / (4. * np.pi / 3.)) ** (1. / 3.)
 
         # Limits of binary energy distribution
-        # If emin and emax are None, assume limits are between twice the
-        # hard-soft boundary and twice the contact boundary between two solar
-		# mass stars
+        # If emin and emax (minimum/maximum binary energy) are None,
+        # assume limits are between twice the hard-soft boundary and
+        # twice the contact boundary between two solar mass stars
 
         if emin is None:
-
             a_hs = grav * self.mbar / (sig0 ** 2.)  # pc
             a_max = 2. * a_hs
             e_min = grav * (self.mbar ** 2.) / (2.0 * a_max)  # Msun (km/s)**2
@@ -276,6 +298,10 @@ class corespraydf(object):
 
                 vs = self._sample_escape_velocity(e0, ms, mb, npeak)
 
+# ----------------------------------------------------------------------------
+# this code samples an escaper and a binary
+# Ritik will be sampling two binaries
+
                 if vs > self.vesc0:
 
                     self.vesc = np.append(self.vesc, vs)
@@ -286,7 +312,8 @@ class corespraydf(object):
 
                     if binaries:
                         # Check to see if recoil binary will also escape
-                        # Binary kick velocity is calculated assuming total linear momentum of system sums to zero
+                        # Binary kick velocity is calculated assuming total
+                        # linear momentum of system sums to zero
 
                         pxi = ms * vxs + mb * vxb
                         pyi = ms * vys + mb * vyb
@@ -315,6 +342,7 @@ class corespraydf(object):
                 if verbose:
                     print('DEBUG: ', nescape, prob, vs, self.vesc0)
 
+        # PyCharm says the below variables are not used anywhere
         Re0, phie0, ze0, vRe0, vTe0, vze0 = np.array([]), np.array(
             []), np.array([]), np.array([]), np.array([]), np.array([])
 
@@ -352,14 +380,16 @@ class corespraydf(object):
                 [os.R(0.) / self.ro, os.vR(0.) / self.vo, os.vT(0.) / self.vo,
                  os.z(0.) / self.ro, os.vz(0.) / self.vo, os.phi(0.)])
 
-        # Save initial and final positions and velocities of kicked stars at t=0 in orbit objects
+        # Save initial and final positions and velocities
+        # of kicked stars at t=0 in orbit objects
         self.oi = Orbit(vxvv_i, ro=self.ro, vo=self.vo,
                         solarmotion=[-11.1, 24.0, 7.25])
         self.of = Orbit(vxvv_f, ro=self.ro, vo=self.vo,
                         solarmotion=[-11.1, 24.0, 7.25])
 
         if binaries:
-            # Integrate orbits of binary star with kick velocities greater than the cluster's escape speed:
+            # Integrate orbits of binary star with kick velocities
+            # greater than the cluster's escape speed:
             # Initial and final positions and velocities
             vxvvb_i = []
             vxvvb_f = []
@@ -383,7 +413,8 @@ class corespraydf(object):
                     [Ri / self.ro, vRi / self.vo, vTi / self.vo, zi / self.ro,
                      vzi / self.vo, phii])
 
-                # Integrate orbit from tesc to 0. if kick velocity is higher than cluster's escape velocity
+                # Integrate orbit from tesc to 0. if kick velocity is
+                # higher than cluster's escape velocity
 
                 if self.bindx[i]:
                     os = Orbit(vxvvb_i[-1], ro=self.ro, vo=self.vo,
@@ -410,9 +441,12 @@ class corespraydf(object):
         else:
             return self.of
 
+# ------------------------------------------------------------------------------
+
+    # probability of a three body escaper
     def _prob_three_body_escape(self, ms, m_a, m_b, q):
 
-        # Equation 7.23
+        # Equation 7.23 (eqn 1 from 3-body paper)
         prob = (ms ** q) / (ms ** q + m_a ** q + m_b ** q)
         return prob
 
@@ -430,7 +464,7 @@ class corespraydf(object):
             n = len(mb1)
 
         ebin_si = self._power_law_distribution_function(n, alpha, emin,
-                                                        emax)  # Joules = kg (m/s)^2
+                                                        emax) # Joules = kg (m/s)^2
         ebin = ebin_si / 1.9891e30  # Msun (m/s)^2
         ebin /= (1000.0 * 1000.0)  # Msun (km/s)^2
 
@@ -442,7 +476,8 @@ class corespraydf(object):
 
         return ebin, semi
 
-    def _sample_escape_velocity(self, e0, ms, mb, npeak=5):
+    # return type float
+    def _sample_escape_velocity(self, e0, ms, mb, npeak=5.):
         # randomly sample between npeak*vs_peak
 
         vs_peak = self._escape_velocity_distribution_peak(e0, ms, mb)
@@ -459,14 +494,15 @@ class corespraydf(object):
         return vs
 
     def _escape_velocity_distribution(self, vs, e0, ms, mb):
-        # Equation 7.19
+        # Equation 7.19 (eqn 3 from 3-body paper)
         M = ms + mb
         fv = (3.5 * (np.fabs(e0) ** (7. / 2.)) * ms * M / mb) * vs / (
-                (np.fabs(e0) + 0.5 * (ms * M / mb) * (vs ** 2.)) ** (
-                9. / 2.))
+                (np.fabs(e0) + 0.5 * (ms * M / mb) * (vs ** 2.)) **
+                (9. / 2.))
         return fv
 
     def _escape_velocity_distribution_peak(self, e0, ms, mb):
+        # Equation 4 from 3-body paper
         M = ms + mb
         vs_peak = 0.5 * np.sqrt((M - ms) / (ms * M)) * np.sqrt(np.fabs(e0))
 
@@ -474,7 +510,8 @@ class corespraydf(object):
 
     def sample_uniform(self, tdisrupt=1000., rate=1., nstar=None, vmin=0.,
                        vmax=500., verbose=False):
-        """ A function for sampling a uniform core ejection distribution function
+        """ A function for sampling a uniform core ejection distribution
+        function
 
 		Parameters
 		----------
@@ -484,7 +521,8 @@ class corespraydf(object):
 		rate : float
 			ejection rate (default 1 per Myr)
 		nstar : float
-			if set, nstar stars will be ejected randomly from tdisrupt to 0 Myr. Rate is recalculated. (default : None)
+			if set, nstar stars will be ejected randomly from tdisrupt to 0 Myr.
+			Rate is recalculated. (default : None)
 		vmin : float
 			minimum kick velocity
 		vmax : float
@@ -573,7 +611,8 @@ class corespraydf(object):
                 [os.R(0.) / self.ro, os.vR(0.) / self.vo, os.vT(0.) / self.vo,
                  os.z(0.) / self.ro, os.vz(0.) / self.vo, os.phi(0.)])
 
-        # Save initial and final positions and velocities of kicked stars at t=0 in orbit objects
+        # Save initial and final positions and velocities of
+        # kicked stars at t=0 in orbit objects
         self.oi = Orbit(vxvv_i, ro=self.ro, vo=self.vo,
                         solarmotion=[-11.1, 24.0, 7.25])
         self.of = Orbit(vxvv_f, ro=self.ro, vo=self.vo,
@@ -583,7 +622,8 @@ class corespraydf(object):
 
     def sample_gaussian(self, tdisrupt=1000., rate=1., nstar=None, vmean=100.,
                         vsig=10., verbose=False):
-        """ A function for sampling a uniform core ejection distribution function
+        """ A function for sampling a uniform core ejection distribution
+        function
 
 		Parameters
 		----------
@@ -593,7 +633,8 @@ class corespraydf(object):
 		rate : float
 			ejection rate (default 1 per Myr)
 		nstar : float
-			if set, nstar stars will be ejected randomly from tdisrupt to 0 Myr. Rate is recalculated. (default : None)
+			if set, nstar stars will be ejected randomly from tdisrupt to 0 Myr.
+			Rate is recalculated. (default : None)
 		vmean : float
 			average kick velocity
 		vsig : float
@@ -609,7 +650,7 @@ class corespraydf(object):
 
 		History
 		-------
-		2022 - Written - Grandin/Webb (UofT)
+		2022 - Written - Grondin/Webb (UofT)
 
 		"""
 
@@ -682,7 +723,8 @@ class corespraydf(object):
                 [os.R(0.) / self.ro, os.vR(0.) / self.vo, os.vT(0.) / self.vo,
                  os.z(0.) / self.ro, os.vz(0.) / self.vo, os.phi(0.)])
 
-        # Save initial and final positions and velocities of kicked stars at t=0 in orbit objects
+        # Save initial and final positions and velocities of
+        # kicked stars at t=0 in orbit objects
         self.oi = Orbit(vxvv_i, ro=self.ro, vo=self.vo,
                         solarmotion=[-11.1, 24.0, 7.25])
         self.of = Orbit(vxvv_f, ro=self.ro, vo=self.vo,
@@ -765,20 +807,18 @@ class corespraydf(object):
         return self.line, self.pt, self.pt2
 
     def animate(self, frames=100, interval=50, xlim=(-20, 20), ylim=(-20, 20)):
-
         """Animate the ejection of stars from the cluster's core
 
 		Parameters
     	----------
-
     	frames : int
     		number of frames to use for animation (default:100)
 		interval : float
-			time intercal between frames (default: 50 Myr)
+			time interval between frames (default: 50 Myr)
 		xlim : tuple
 			xlimits for figure
 		ylim : tuple
-			ylimts for figure
+			ylimits for figure
 
 	    History
    		-------
@@ -819,7 +859,8 @@ class corespraydf(object):
                                             blit=False)
 
     def snapout(self, filename='corespray.dat', filenameb='coresprayb.dat'):
-        """Output present day positions, velocities, escape times, and escape velocities of stars
+        """Output present day positions, velocities, escape times, and escape
+        velocities of stars
 
 		Parameters
     	----------
@@ -833,6 +874,7 @@ class corespraydf(object):
 	    2021 - Written - Webb (UofT)
 
 	    """
+        # what are these variables?
         R = np.append(self.o.R(0.), self.of.R(0.))
         vR = np.append(self.o.vR(0.), self.of.vR(0.))
         vT = np.append(self.o.vT(0.), self.of.vT(0.))

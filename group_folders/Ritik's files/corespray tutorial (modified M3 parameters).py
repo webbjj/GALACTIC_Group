@@ -19,9 +19,9 @@ plt.rcParams['font.family'] = 'STIXGeneral'
 
 # load in parameters for M3
 gcname = 'M3'  # GC name
-mu0 = 1.  # Average 1D velocity in the core [km/s] (changed 0. -> 1.)
-sig0 = 7.6  # Central 1D velocity dispersion [km/s] (changed 7.6 -> 8.6)
-vesc0 = 30.0  # Central escape velocity [km/s] (changed 30.0 -> 31.0)
+mu0 = 0.  # Average 1D velocity in the core [km/s] (changed 0. -> 1.)
+sig0 = 20.6  # Central 1D velocity dispersion [km/s] (changed 7.6 -> 20.6, not yet)
+vesc0 = 30.0  # Central escape velocity [km/s] (changed 30.0 -> 40.0, not yet)
 logrho0 = 3.67  # Log of central density [Msol / pc^3]
 rho0 = 10.0**3.67  # Core density [Msol / pc^3]
 mgc = 4.06e5  # Mass [solar masses]
@@ -142,7 +142,7 @@ ax[1, 1].set_xlabel(r"$v_{esc}$ (km/s)", fontsize=18)
 ax[1, 1].set_ylabel("Normalized Counts", fontsize=18)
 
 fig.tight_layout()
-plt.savefig("Ritik's M3 plot (modified mu0).png")
+plt.savefig("Ritik's M3 plot (nstars=100, central vel dispersion=20.6).png")
 plt.show()
 
 
