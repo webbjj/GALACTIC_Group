@@ -2,6 +2,12 @@ This is Ritik's Folder.
 
 Brief progress reports will be made here, chronologically (dd/mm/yy):
 
+- (24/01/23)
+  - downloaded updated version of corespray
+  - identified functions that need to be modified for 4-body
+  - created escape velocity distribution functions using 4-body paper
+  - goal for next week: make 4-body versions of other skeleton functions
+  
 - (25/10/22)
   - created modified version of corespray tutorial with new M3 parameters
   - created/saved a plot for new version of tutorial
