@@ -108,7 +108,7 @@ class corespraydf(object):
         mu0 : float
             average 1D velocity in the core (default: 0 km/s)
         sig0 : float
-            avarege 1D velocity disperions in the core (default 10.0 km/s)
+            avarege 1D velocity dispersions in the core (default 10.0 km/s)
         vesc0 : float
             escape velocity from the core (default: 10.0 km/s)
         rho0 : float
@@ -134,16 +134,18 @@ class corespraydf(object):
             array of masses to be used instead of drawing for a power-law mass
             function (default: None)
             Note : mmin, mmax, and alpha will be overridden
-        m1 : float
-            fixed mass for single star (default: None)
+        m1a : float
+            fixed mass for binary star A1 (default: None)
             Note : (mmin, mmax, alpha) or (masses) must still be provided to
             determine the mean mass in the core
+        m1b: float
+            fixed mass for binary star B1 in first binary (default: None)
         m2a : float
-            fixed mass for binary star A (default: None)
+            fixed mass for binary star A2 (default: None)
             Note : (mmin, mmax, alpha) or (masses) must still be provided to
             determine the mean mass in the core
         m2b : float
-            fixed mass for binary star B (default: None)
+            fixed mass for binary star B2 (default: None)
             Note : (mmin, mmax, alpha) or (masses) must still be provided to
             determine the mean mass in the core
         emin : float
@@ -153,7 +155,7 @@ class corespraydf(object):
         balpha : float
             power-law slope of initial binary binding energy distribution
             (default: -1)
-        q : float
+        q: float
             exponent for calculating probability of stellar escape from
             three-body system (#Equation 7.23) (default: -3)
         npeak : float
@@ -163,6 +165,9 @@ class corespraydf(object):
         binaries : bool
             keep track of binaries that receive recoil kicks greater than the
             cluster's escape velocity (default : False)
+            if true, keep track of second binary
+            if false, keep track of first binary
+            might be arbitrary
         verbose : bool
             print additional information to screen (default: False)
 
@@ -240,6 +245,7 @@ class corespraydf(object):
 
         self.mu0, self.sig0, self.vesc0, self.rho0 = mu0, sig0, vesc0, rho0
 
+# change the below (want to get
         if masses is None:
             self.mmin, self.mmax, self.alpha = mmin, mmax, alpha
             # Mean separation of star's in the core equal to twice the radius of a sphere that contains one star
@@ -354,20 +360,20 @@ class corespraydf(object):
             mb = m_a + m_b
             M = ms + mb
 
-            prob = self._prob_three_body_escape(ms, m_a, m_b, self.q)
+            prob = self._prob_three_body_escape(ms, m_a, m_b, self.q)  # will be new
 
             if np.random.rand() < prob:
 
-                vxs, vys, vzs = np.random.normal(self.mu0, self.sig0, 3)
+                vxs, vys, vzs = np.random.normal(self.mu0, self.sig0, 3) # binary 1
                 vstar = np.sqrt(vxs ** 2. + vys ** 2. + vzs ** 2.)
-                vxb, vyb, vzb = np.random.normal(self.mu0, self.sig0, 3)
+                vxb, vyb, vzb = np.random.normal(self.mu0, self.sig0, 3) # binary 2
                 vbin = np.sqrt(vxb ** 2. + vyb ** 2. + vzb ** 2.)
 
                 rdot = np.sqrt(
                     (vxs - vxb) ** 2. + (vys - vyb) ** 2. + (vzs - vzb) ** 2.)
 
                 ebin, semi = self._sample_binding_energy(m_a, m_b, balpha,
-                                                         self.emin, self.emax)
+                                                         self.emin, self.emax) # need new one for second binary
 
                 if rsample:
 
@@ -393,15 +399,15 @@ class corespraydf(object):
                         (xs - xb) ** 2. + (ys - yb) ** 2. + (zs - zb) ** 2.)
 
                     e0 = 0.5 * (mb * ms / M) * (
-                                rdot ** 2.) - grav * ms * mb / dr + ebin
+                                rdot ** 2.) - grav * ms * mb / dr + ebin # calculating energy
                 else:
                     e0 = 0.5 * (mb * ms / M) * (
                                 rdot ** 2.) - grav * ms * mb / self.rsep + ebin
                     dr = self.rsep
 
-                vs = self._sample_escape_velocity(e0, ms, mb, npeak, nrandom)
+                vs = self._sample_escape_velocity(e0, ms, mb, npeak, nrandom) # new function
 
-                if vs > self.vesc0:
+                if vs > self.vesc0: # refactor for first binary
 
                     self.vesc = np.append(self.vesc, vs)
                     self.dr = np.append(self.dr, dr)
@@ -409,7 +415,7 @@ class corespraydf(object):
                     vykick[nescape] = vs * (vys / vstar)
                     vzkick[nescape] = vs * (vzs / vstar)
 
-                    if binaries:
+                    if binaries: # refactor for second binary
                         # Check to see if recoil binary will also escape
                         # Binary kick velocity is calculated assuming total linear momentum of system sums to zero
 
@@ -606,7 +612,7 @@ class corespraydf(object):
 
         return oi
 
-    def _prob_three_body_escape(self, ms, m_a, m_b, q):
+    def _prob_three_body_escape(self, ms, m_a, m_b, q): # find new one for 4 body
 
         # Equation 7.23
         prob = (ms ** q) / (ms ** q + m_a ** q + m_b ** q)
@@ -638,7 +644,7 @@ class corespraydf(object):
 
         return ebin, semi
 
-    def _sample_escape_velocity(self, e0, ms, mb, npeak=5, nrandom=1000):
+    def _sample_escape_velocity(self, e0, ms, mb, npeak=5, nrandom=1000): # new version for 4 body
         # randomly sample between npeak*vs_peak
 
         vs_peak = self._escape_velocity_distribution_peak(e0, ms, mb)
@@ -690,8 +696,6 @@ class corespraydf(object):
         return vs_peak
 
 # -----------------------------------------------------------------------------
-
-# will have to modify ----------------------------------------------------------
 
     def sample_uniform(self, tdisrupt=1000., rate=1., nstar=None, vmin=0.,
                        vmax=500., verbose=False, **kwargs):
@@ -768,7 +772,6 @@ class corespraydf(object):
 
         return self.of
 
-# will have to modify ---------------------------------------------------------
 
     def sample_gaussian(self, tdisrupt=1000., rate=1., nstar=None, vmean=100.,
                         vsig=10., verbose=False, **kwargs):
@@ -845,7 +848,7 @@ class corespraydf(object):
 
         return self.of
 
-# might have to modify --------------------------------------------------------
+# might have to modify the below ----------------------------------------------
 
     def _power_law_distribution_function(self, n, alpha, xmin, xmax):
 
@@ -921,7 +924,7 @@ class corespraydf(object):
 
         return self.line, self.pt, self.pt2
 
-# no need to change -----------------------------------------------------------
+# no need to change the below -------------------------------------------------
 
     def animate(self, frames=100, interval=50, xlim=(-20, 20), ylim=(-20, 20)):
 
@@ -977,7 +980,7 @@ class corespraydf(object):
                                             frames=frames, interval=interval,
                                             blit=False)
 
-# no need to change ------------------------------------------------------------
+# no need to change the below -------------------------------------------------
 
     def snapout(self, filename='corespray.dat', filenameb='coresprayb.dat'):
         """Output present day positions, velocities, escape times, and escape
