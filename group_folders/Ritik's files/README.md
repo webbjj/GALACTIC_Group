@@ -2,6 +2,11 @@ This is Ritik's Folder.
 
 Brief progress reports will be made here, chronologically (dd/mm/yy):
 
+- (31/01/23)
+  - created new file for sample_four_body() function
+  - added new parameters for binaries in new function
+  - goal for next week: start restructuring new function for the 2 + 2 binary case
+  
 - (24/01/23)
   - downloaded updated version of corespray
   - identified functions that need to be modified for 4-body
