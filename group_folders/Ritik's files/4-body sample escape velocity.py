@@ -80,17 +80,20 @@ L3 = 0.15 / L_max
 n1 = 18 * L1**2 + 3  # eqn for n from Leigh et al., 2021
 
 
-velocities = []
-i = 0
-while i < 10:
-    a = _sample_escape_velocity_four_body(energy_total, m_single, m_triplet,
-                                          n1)
-    velocities.append(a)
-    i += 1
-# vs_four = _sample_escape_velocity_four_body(energy_total, m_single, m_triplet,
-#                                             n1)
-print("four body", velocities)
-
+# velocities = []
+# i = 0
+# while i < 10:
+#     a = _sample_escape_velocity_four_body(energy_total, m_single, m_triplet,
+#                                           n1)
+#     velocities.append(a)
+#     i += 1
+# # vs_four = _sample_escape_velocity_four_body(energy_total, m_single, m_triplet,
+# #                                             n1)
+# print("four body", velocities)
+#
+#
+# plt.hist(velocities, bins=7, color='#8d99ae', density=True)
+print(n1)
 
 
 
