@@ -41,9 +41,9 @@ vo = 220.  # circular orbit velocity at the solar circle (needed for galpy)
 os_init = Orbit.from_name(gcname, ro=ro, vo=vo, solarmotion=[-11.1, 24.0, 7.25])
 
 # integrating cluster orbit
-ts = np.linspace(0,10,1000)  # integration times
+ts = np.linspace(0, 10, 1000)  # integration times
 os_init.integrate(ts, potential)  \
-    # can choose which Galactic potential to use (e.g. MWPotenial2014)
+    # can choose which Galactic potential to use (e.g. MWPotential2014)
 
 # find maximum orbital period for cluster
 p_orb_rad = os_init.Tr()
@@ -82,6 +82,8 @@ r_b = ob.R()  # [kpc]
 z_b = ob.z()  # [kpc]
 # Would tesc of binary be same as escaper star?
 v_esc_b = cspray.vescb  # [km/s]
+print("vesc_b is:", v_esc_b)
+print("vesc is:", v_esc)
 m_b1 = cspray.mb1  # [Msol]
 m_b2 = cspray.mb2  # [Msol]
 m_b_tot = m_b1 + m_b2  # [Msol]

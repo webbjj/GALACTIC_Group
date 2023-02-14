@@ -1,4 +1,3 @@
-# -----------------------------------------------------------------------------
 def sample_four_body(self, tdisrupt=1000., rate=1., nstar=None, mu0=0.,
                      sig0=10.0, vesc0=10.0, rho0=1., mmin=0.1, mmax=1.4,
                      alpha=-1.35, masses=None, m1a=None, m1b=None,
@@ -7,7 +6,7 @@ def sample_four_body(self, tdisrupt=1000., rate=1., nstar=None, mu0=0.,
     """ A function for sampling the three-body interaction core ejection
         distribution function
 
-    Parameters
+    Parameters - code 4-body myself in new notebook
     ----------
 
     tdisrupt : float
@@ -20,7 +19,7 @@ def sample_four_body(self, tdisrupt=1000., rate=1., nstar=None, mu0=0.,
     mu0 : float
         average 1D velocity in the core (default: 0 km/s)
     sig0 : float
-        avarege 1D velocity dispersions in the core (default 10.0 km/s)
+        average 1D velocity dispersions in the core (default 10.0 km/s)
     vesc0 : float
         escape velocity from the core (default: 10.0 km/s)
     rho0 : float
@@ -228,11 +227,11 @@ def sample_four_body(self, tdisrupt=1000., rate=1., nstar=None, mu0=0.,
     self.eb = np.zeros(self.nstar)
     self.e0 = np.zeros(self.nstar)
 
-    if binaries:
+    if binaries # always return binaries (delete all of the else clauses)
         self.binaries = True
         self.bindx = np.zeros(self.nstar, dtype=bool)
         self.vescb = np.array([])
-    else:
+    else: # delete
         self.binaries = False
 
     if self.timing:

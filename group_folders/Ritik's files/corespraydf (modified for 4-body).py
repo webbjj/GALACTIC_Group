@@ -199,7 +199,7 @@ class corespraydf(object):
 
         History
         -------
-        2021 - Written - Grandin/Webb (UofT)
+        2021 - Written - Grondin/Webb (UofT)
 
         """
 
@@ -402,12 +402,12 @@ class corespraydf(object):
                                 rdot ** 2.) - grav * ms * mb / dr + ebin # calculating energy
                 else:
                     e0 = 0.5 * (mb * ms / M) * (
-                                rdot ** 2.) - grav * ms * mb / self.rsep + ebin
+                                rdot ** 2.) - grav * ms * mb / self.rsep + ebin  # binding energy of binary
                     dr = self.rsep
 
                 vs = self._sample_escape_velocity(e0, ms, mb, npeak, nrandom) # new function
 
-                if vs > self.vesc0: # refactor for first binary
+                if vs > self.vesc0:  # refactor for first binary
 
                     self.vesc = np.append(self.vesc, vs)
                     self.dr = np.append(self.dr, dr)
@@ -415,7 +415,7 @@ class corespraydf(object):
                     vykick[nescape] = vs * (vys / vstar)
                     vzkick[nescape] = vs * (vzs / vstar)
 
-                    if binaries: # refactor for second binary
+                    if binaries:  # refactor for second binary
                         # Check to see if recoil binary will also escape
                         # Binary kick velocity is calculated assuming total linear momentum of system sums to zero
 

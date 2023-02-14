@@ -6,6 +6,8 @@ Brief progress reports will be made here, chronologically (dd/mm/yy):
   - created new file for sample_four_body() function
   - added new parameters for binaries in new function
   - goal for next week: start restructuring new function for the 2 + 2 binary case
+  - goal for next week: code a new distribution function from Nathan's paper
+  - goal for next week: 
   
 - (24/01/23)
   - downloaded updated version of corespray
