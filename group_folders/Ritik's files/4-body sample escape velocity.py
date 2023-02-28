@@ -52,17 +52,17 @@ def _escape_velocity_distribution_peak_four_body(n, e0, ms, mb):
     return vs_peak
 
 
-m_sun = 1.989 * 10**30  # kg
+# m_sun = 1.989 * 10**30  # kg
 
-# g_constant = 4.301 * 10**-9  # km^2 Mpc M_Sun^-1 s^-2
+g_constant = 4.301 * 10**-9  # km^2 Mpc M_Sun^-1 s^-2
 
-g_constant = 6.67 * 10**-11  # m^3 kg^-1 s^-2
+# g_constant = 6.67 * 10**-11  # m^3 kg^-1 s^-2
 
 
-m_single = 3 * m_sun  # Mass [multiples of solar mass]
-m1 = 2 * m_sun
-m2 = 1.5 * m_sun
-m3 = 1.25 * m_sun
+m_single = 3  # * m_sun  # Mass [multiples of solar mass]
+m1 = 2  # * m_sun
+m2 = 1.5  # * m_sun
+m3 = 1.25  # * m_sun
 m_triplet = m1 + m2 + m3
 m_total = m_triplet + m_single
 
@@ -124,7 +124,7 @@ plt.hist(velocities_0, bins=7, color='blue', edgecolor='black', linewidth=1.2,
 plt.xlabel("esc. velocity (km/s)")
 plt.ylabel("normalized count")
 plt.title("Sample Escape Velocities for 4-body Function with L_0 = 0")
-plt.savefig("escvel(different units)(4body for L_0 = 0).png")
+plt.savefig("escvel(4body for L_0 = 0).png")
 plt.show()
 
 # velocities_015 = []
@@ -184,7 +184,7 @@ plt.title("Distribution of Escape Velocity Peaks for n = [0, 100]")
 plt.xlabel("n")
 plt.ylabel("value of peak in km/s")
 plt.legend()
-plt.savefig("distribution 4-esc vel (different units).png")
+plt.savefig("distribution 4-esc vel.png")
 plt.show()
 
 
@@ -199,7 +199,7 @@ plt.xlabel("n")
 plt.ylabel("value of peak in km/s")
 plt.xlim(-1, 10.0)
 plt.legend()
-plt.savefig("(zoomed) distribution 4-esc vel (different units).png")
+plt.savefig("(zoomed) distribution 4-esc vel.png")
 plt.show()
 
 
