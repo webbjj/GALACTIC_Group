@@ -1,3 +1,14 @@
+from galpy.orbit import Orbit
+from galpy.potential import MWPotential2014, PlummerPotential, KingPotential, \
+    MovingObjectPotential
+from galpy.util import conversion, coords
+import numpy as np
+
+import matplotlib.pyplot as plt
+from matplotlib import animation
+
+import time
+
 def sample_four_body(self, tdisrupt=1000., rate=1., nstar=None, mu0=0.,
                      sig0=10.0, vesc0=10.0, rho0=1., mmin=0.1, mmax=1.4,
                      alpha=-1.35, masses=None, m1a=None, m1b=None,
@@ -227,7 +238,7 @@ def sample_four_body(self, tdisrupt=1000., rate=1., nstar=None, mu0=0.,
     self.eb = np.zeros(self.nstar)
     self.e0 = np.zeros(self.nstar)
 
-    if binaries # always return binaries (delete all of the else clauses)
+    if binaries: # always return binaries (delete all of the else clauses)
         self.binaries = True
         self.bindx = np.zeros(self.nstar, dtype=bool)
         self.vescb = np.array([])
